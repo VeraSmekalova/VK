@@ -1,0 +1,43 @@
+from urllib.parse import urlencode
+
+import requests
+
+import json
+
+APP_ID = '7058341'
+AUTH_URL ='https://oauth.vk.com/authorize'
+AUTH_DATA = {
+    'client_id': APP_ID,
+    'display': 'page',
+    'scope': 'friends',
+    'response_type': 'token'
+}
+
+print('?'.join((AUTH_URL, urlencode(AUTH_DATA))))
+
+TOKEN = '29e0fdf523e4945f876cc8fb052f95ce17abd31deea66ade823eb35b7b377fe0e61af9485d8497eaf7b16'
+
+
+params={
+    'access_token': TOKEN,
+    'v': '5.52'
+    }
+
+user_params = params.copy()
+user_params['user_id'] = '325062671'
+#
+
+response = requests.get(
+    'https://api.vk.com/method/friends.get',
+    params=user_params
+)
+response_list = json.loads(response.text)
+print(response_list)
+for id in response_list['response']['items']:
+    user_params['target_uid'] = id
+    response_friends = requests.get(
+        'https://api.vk.com/method/friends.getMutual',
+        params=user_params
+    )
+
+    print(response_friends.text)
